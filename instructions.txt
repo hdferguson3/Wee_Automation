@@ -1,0 +1,15 @@
+change location: cd /home/user/Documents
+create folder: sudo mkdir /home/user/Documents/Well_Automation
+initiaize git: git init
+clone repo: git clone https://github.com/hdferguson3/Well_Automation.git
+install mysql (note password): sudo apt-get install mysql-server
+login mysql w/ 'root': mysql -u root -p
+change 'root' password: FLUSH PRIVILEGES; ALTER USER 'root'@localhost IDENTIFIED BY 'dougf1!';
+Create database: CREATE DATABASE welldb DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_bin;
+Create user 'pi': CREATE USER pi@localhost IDENTIFIED BY 'raspberry';
+Give user privileges to database: GRANT ALL ON welldb.* to pi@localhost WITH GRANT OPTION;
+Change to database welldb:USE welldb;
+Create table: CREATE TABLE data (id MEDIUMINT NOT NULL AUTO_INCREMENT, meter1 DECIMAL(3,1), meter2 DECIMAL(3,1), meter3 DECIMAL(3,1), press1 DECIMAL(3,1), pump1 TINYINT, timestamp TIMESTAMP, PRIMARY KEY (id));
+Exit mysql: exit;
+
+			

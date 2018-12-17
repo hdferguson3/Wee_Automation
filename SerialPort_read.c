@@ -7,24 +7,6 @@
 	/* Baudrate - 9600                                                                                    */
 	/* Stop bits -1                                                                                       */
 	/* No Parity                                                                                          */
-        /*----------------------------------------------------------------------------------------------------*/
-	/* Compiler/IDE  : gcc 4.6.3                                                                          */
-	/* Library       :                                                                                    */
-	/* Commands      : gcc -o serialport_read serialport_read.c                                           */
-	/*====================================================================================================*/
-
-	/*====================================================================================================*/
-	/* Running the executable                                                                             */
-	/* ---------------------------------------------------------------------------------------------------*/ 
-	/* 1) Compile the  serialport_read.c  file using gcc on the terminal (without quotes)                 */
-        /*                                                                                                    */
-	/*	" gcc -o serialport_read serialport_read.c "                                                  */
-	/*                                                                                                    */
-        /* 2) Linux will not allow you to access the serial port from user space,you have to be root.So use   */
-        /*    "sudo" command to execute the compiled binary as super user.                                    */
-        /*                                                                                                    */
-        /*       "sudo ./serialport_read"                                                                     */
-	/*                                                                                                    */
 	/*====================================================================================================*/
 
 	/*====================================================================================================*/
@@ -33,7 +15,7 @@
 	/* /dev/ttyUSBx - when using USB to Serial Converter, where x can be 0,1,2...etc                      */
 	/* /dev/ttySx   - for PC hardware based Serial ports, where x can be 0,1,2...etc                      */
         /*====================================================================================================*/
-	
+
 	/*-------------------------------------------------------------*/
     	/* termios structure -  /usr/include/asm-generic/termbits.h    */ 
 	/* use "man termios" to get more info about  termios structure */
@@ -45,21 +27,9 @@
     	#include <unistd.h>  /* UNIX Standard Definitions 	   */ 
     	#include <errno.h>   /* ERROR Number Definitions           */
 	#include <string.h>  /* String manipulation		   */
-	#include <time.h>    /* Timestamp			   */
-	#include <mysql/mysql.h>   /*inlcude mysql ref            */
+
 	void main(void)
 {
-        	MYSQL *conn;
-		MYSQL_RES *res;
-		MYSQL_ROW row;
-
-		char *server = "localhost";
-		char *user = "pi";
-		char *password = "raspberry";
-		char *database = "demodb";
-
-		conn = mysql_init(NULL);
-
 		int fd;/*File Descriptor*/
 
 		printf("\n +----------------------------------+");
@@ -74,17 +44,14 @@
 			   					/* O_RDWR   - Read/Write access to serial port       */
 								/* O_NOCTTY - No terminal will control the process   */
 								/* Open in blocking mode,read will wait              */
-									
-									                                        
-									
+
         	if(fd == -1)						/* Error Checking */
             	   printf("\n  Error! in Opening ttyUSB0  ");
+		   
         	else
             	   printf("\n  ttyUSB0 Opened Successfully ");
 
-	
 		/*---------- Setting the Attributes of the serial port using termios structure --------- */
-		
 		struct termios SerialPortSettings;	/* Create the structure                          */
 
 		tcgetattr(fd, &SerialPortSettings);	/* Get the current attributes of the Serial port */
@@ -98,16 +65,16 @@
 		SerialPortSettings.c_cflag &= ~CSTOPB;   /* CSTOPB = 2 Stop bits,here it is cleared so 1 Stop bit */
 		SerialPortSettings.c_cflag &= ~CSIZE;	 /* Clears the mask for setting the data size             */
 		SerialPortSettings.c_cflag |=  CS8;      /* Set the data bits = 8                                 */
-		
+
 		SerialPortSettings.c_cflag &= ~CRTSCTS;       /* No Hardware flow Control                         */
 		SerialPortSettings.c_cflag |= CREAD | CLOCAL; /* Enable receiver,Ignore Modem Control lines       */ 
-		
-		
+
+
 		SerialPortSettings.c_iflag &= ~(IXON | IXOFF | IXANY);          /* Disable XON/XOFF flow control both i/p and o/p */
 		SerialPortSettings.c_iflag &= ~(ICANON | ECHO | ECHOE | ISIG);  /* Non Cannonical mode                            */
 
 		SerialPortSettings.c_oflag &= ~OPOST;/*No Output Processing*/
-		
+
 		/* Setting Time outs */
 		SerialPortSettings.c_cc[VMIN] = 12; /* Read at least 12 characters */
 		SerialPortSettings.c_cc[VTIME] = 0; /* Wait indefinetly   */
@@ -117,7 +84,7 @@
 		    printf("\n  ERROR ! in Setting attributes");
 		else
                     printf("\n  BaudRate = 9600 \n  StopBits = 1 \n  Parity   = none");
-			
+
 	        /*------------------------------- Read data from serial port -----------------------------*/
 
 		tcflush(fd, TCIFLUSH);   /* Discards old data in the rx buffer            */
@@ -127,70 +94,16 @@
  		int i = 0;
 
 		bytes_read = read(fd,&read_buffer,32); /* Read the data                   */
-			
+
 		printf("\n\n  Bytes Rxed -%d", bytes_read); /* Print the number of bytes read */
 		printf("\n\n  ");
 
 		for(i=0;i<bytes_read;i++)	 /*printing only the received characters*/
 		    printf("%c",read_buffer[i]);
-	
 		printf("\n +----------------------------------+\n\n\n");
 
 		close(fd); /* Close the serial port */
-
-		/* Connect to database */
-
-		if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)) {
-      		   fprintf(stderr, "%s\n", mysql_error(conn));
-                   exit(1);
-                }
-		/* Parse return String              */
-
-		char *buffer;
-		char sensor[1];
-		char value[2];
-		char query[1024];
-
-		buffer = strstr(read_buffer, "*");
-		time_t rawtime;
-		struct tm *info;
-		char timestamp [80];
-
-		time( &rawtime );
-		info = localtime( &rawtime );
-
-		strftime(timestamp, 80, "%Y-%m-%d %H:%M:%S", info);
-
-		printf("%s @ %s\n", buffer,timestamp); //confirm correct buffer
-
-		int length = 2; int c = 0; int index = 8;
-		while (c < length) {
-			sensor[c] = buffer[index+c-1];
-			c++;
-		}
-		sensor[c] = '\0';
-		//printf("Sensor is:%s\n",sensor);
-
-		c = 0; index = 11;
-		while (c < length) {
-			value[c] = buffer[index+c-1];
-			c++;
-		}
-		value[c] = '\0';
-		//printf("Value is:%s\nTimestamp is:%s", value,timestamp);
-		sprintf(query,"INSERT INTO data (sensor1,timestamp) VALUES (%s,'%s')",value,timestamp);
-		printf("%s\n",query);
-		/* send SQL query */
-   		if (mysql_query(conn, query))
-   		{
-    			printf("Error %u: %s\n", mysql_errno(conn), mysql_error(conn));
-    			exit(1);
- 		}
-
-   		res = mysql_use_result(conn);
-
-   		/* close connection */
-  		mysql_free_result(res);
-   		mysql_close(conn);
+		strcpy(read_buffer, "@11.0,12.1,13.2,14.3,1*");
+		printf("The read buffer is %s\n",read_buffer);
 
 }
