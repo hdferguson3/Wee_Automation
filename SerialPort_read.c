@@ -103,7 +103,7 @@
 		printf("\n +----------------------------------+\n\n\n");
 
 		close(fd); /* Close the serial port */
-		strcpy(read_buffer, "@11.0,12.1,13.2,14.3,1*");
+		strcpy(read_buffer, "11.0,12.1,13.2,14.3,1");
 		printf("The read buffer is %s\n",read_buffer);
 
 }

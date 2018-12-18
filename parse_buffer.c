@@ -55,8 +55,8 @@ int main()
 {
     char read_buffer[] = "11.0,12.1,13.2,14.3,1";
     char** tokens;
-    float dataArray[5] = {0,0,0,0,0};
-    float value = 0.0;
+    char dataArray[5] = {'0.0','0.0','0.0','0.0','0','\0'};
+    char *value;
 
     printf("read buffer %s\n\n", read_buffer);
 
@@ -67,15 +67,22 @@ int main()
         int i;
         for (i = 0; *(tokens + i); i++)
         {
-            printf("reading=[%s]\n", *(tokens + i));
-	    sscanf(*(tokens+i), "%f", value );
-	    printf("%f\n", value);
-            free(*(tokens + i));
-		sleep (5);
+            value = *(tokens+i);
+            printf(" value is %s\n", value);
+            //dataArray[i] = value;
+	        free(*(tokens + i));
         }
 
         free(tokens);
     }
-
+    //printf("Meter2 value is %d\n", dataArray[1]);
+    char *array;
+    const char delim = ",";
+	array = strtok(read_buffer, delim);
+		while(array != NULL)
+	{
+		printf("%s\n", array);
+		array = strtok(NULL,delim);
+	}
     return 0;
 }
