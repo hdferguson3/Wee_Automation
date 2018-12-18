@@ -21,14 +21,17 @@
 	/* use "man termios" to get more info about  termios structure */
 	/*-------------------------------------------------------------*/
 
-    	#include <stdio.h>
-    	#include <fcntl.h>   /* File Control Definitions           */
-    	#include <termios.h> /* POSIX Terminal Control Definitions */
-    	#include <unistd.h>  /* UNIX Standard Definitions 	   */ 
-    	#include <errno.h>   /* ERROR Number Definitions           */
+    #include <stdio.h>
+    #include <fcntl.h>   /* File Control Definitions           */
+    #include <termios.h> /* POSIX Terminal Control Definitions */
+    #include <unistd.h>  /* UNIX Standard Definitions 	   */ 
+    #include <errno.h>   /* ERROR Number Definitions           */
 	#include <string.h>  /* String manipulation		   */
+	#include "SerialPort_read.h"
+	
+	char read_buffer[32];   /* Buffer to store the data received              */
 
-	void main(void)
+	int read_serial(void)
 {
 		int fd;/*File Descriptor*/
 
@@ -76,7 +79,7 @@
 		SerialPortSettings.c_oflag &= ~OPOST;/*No Output Processing*/
 
 		/* Setting Time outs */
-		SerialPortSettings.c_cc[VMIN] = 12; /* Read at least 12 characters */
+		SerialPortSettings.c_cc[VMIN] = 16; /* Read at least 16 characters */
 		SerialPortSettings.c_cc[VTIME] = 0; /* Wait indefinetly   */
 
 
@@ -89,7 +92,7 @@
 
 		tcflush(fd, TCIFLUSH);   /* Discards old data in the rx buffer            */
 
-		char read_buffer[32];   /* Buffer to store the data received              */
+
 		int  bytes_read = 0;    /* Number of bytes read by the read() system call */
  		int i = 0;
 
@@ -103,7 +106,5 @@
 		printf("\n +----------------------------------+\n\n\n");
 
 		close(fd); /* Close the serial port */
-		strcpy(read_buffer, "11.0,12.1,13.2,14.3,1");
-		printf("The read buffer is %s\n",read_buffer);
-
+		
 }

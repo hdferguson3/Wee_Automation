@@ -2,40 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include "parse_buffer_1.h"
+#include "SerialPort_read.h"
 
-void main(void)
+//int size=atoi(token);
+int data[];
+
+int parse_buffer()
 {
-	char    str[]= "ls -l";
-	char read_buffer[] = "11.0,12.1,13.2,14.3,1";
-	char ** res  = NULL;
-	char *  p    = strtok (read_buffer, ",");
-	int n_spaces = 0, i;
+	
+	read_serial();
 
+	// Returns first token 
+	char *token = strtok(read_buffer, ","); 
+	int i=0;
+	data[i]=atoi(token);
 
-	/* split string and append tokens to 'res' */
+	// Keep printing tokens while one of the 
+	// delimiters present in str[]. 
+	while (token != NULL) 
+	{ 
+		//printf("%s\n", token); 
+		token = strtok(NULL, ","); 
+		if(token !=NULL){
+		data[i+1]=atoi(token);
+		i=i+1;
+		}
+	}		  
+}
 
-	while (p) {
-		res = realloc (res, sizeof (char*) * ++n_spaces);
-
-		if (res == NULL)
-			exit (-1); /* memory allocation failed */
-
-		res[n_spaces-1] = p;
-
-		p = strtok (NULL, ",");
-	}
-
-	/* realloc one extra element for the last NULL */
-
-	res = realloc (res, sizeof (char*) * (n_spaces+1));
-	res[n_spaces] = 0;
-
-	/* print the result */
-
-	for (i = 0; i < (n_spaces+1); ++i)
-		printf ("res[%d] = %s\n", i, res[i]);
-
-	/* free the memory allocated */
-
-	free (res);
-}  
