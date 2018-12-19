@@ -3,6 +3,6 @@
 #ifndef get_SQL_timestamp
 #define get_SQL_timestamp
 
-extern char timestamp[80];
+extern char time_stamp[80];
 
 #endif

@@ -2,8 +2,9 @@
 
 #include <stdio.h>
 #include <mysql/mysql.h>
+#include "SQL_write.h"
 
-int Write_to_SQL(query)
+void Write_to_SQL(char query[])
 {
 	MYSQL *conn;
 	MYSQL_RES *res;
@@ -15,31 +16,32 @@ int Write_to_SQL(query)
 	char *database = "welldb";
 		
 	conn = mysql_init(NULL);
-	//printf("%s\n",query);
-	printf("does it make it here1?\n");
-	
+	printf("fomated query is: %s...\n", query);	
+		
 	// Connect to database
 
 	if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
-	printf("does it make it here3?\n");
 	{
 		fprintf(stderr, "%s\n", mysql_error(conn));
+		printf("Connection error...\n %s\n",stderr);
+		mysql_close(conn);
 		exit(1);
 	}
 
 	//Query database
  
 	if (mysql_query(conn, query))
-	printf("does it make it here2?\n");
 	{
 		printf("Error %u: %s\n", mysql_errno(conn), mysql_error(conn));
+		mysql_close(conn);
 		exit(1);
 	}
 
 	res = mysql_use_result(conn);
+	printf("Query result: %s\n",res);
 
 	//Close connection
-	printf("does it make it here?\n");
+	printf("Closing MYSQL connection...\n");
 	mysql_free_result(res);
 	mysql_close(conn);
 

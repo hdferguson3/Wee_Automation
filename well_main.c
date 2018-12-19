@@ -11,8 +11,8 @@
 	int meter3 = 333;
 	int press1 = 444;
 	int pump1 = 0;
-	char query[1024];
-
+	char query_to_send[1024];
+	
 void main(void)
 {
 	get_time ();
@@ -22,8 +22,7 @@ void main(void)
 	meter3 = data[2];
 	press1 = data[3];
 	pump1 = data[4];
-	sprintf(query, "INSERT INTO data (meter1,meter2,meter3,press1,pump1,timestamp) VALUES (%d, %d, %d, %d, %d, '%s')",meter1,meter2,
-	meter3,press1,pump1,timestamp);
-	Write_to_SQL(query);
+	sprintf(query_to_send, "INSERT INTO data (meter1,meter2,meter3,press1,pump1,timestamp) VALUES (%d,%d,%d,%d,%d,%s)",meter1,meter2,meter3,press1,pump1,time_stamp);
+	Write_to_SQL(query_to_send);
 	
 }

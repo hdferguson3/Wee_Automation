@@ -3,7 +3,7 @@
 #include "get_SQL_timestamp.h"
 #include <time.h>
 
-char timestamp[80];
+char time_stamp[80];
 
 int get_time(void)
 {
@@ -13,5 +13,5 @@ int get_time(void)
 	time( &rawtime );
 	info = localtime( &rawtime );
 
-	strftime(timestamp, 80, "%Y-%m-%d %H:%M:%S", info);
+	strftime(time_stamp, 80, "'%Y-%m-%d %H:%M:%S'", info);
 }
