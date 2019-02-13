@@ -84,7 +84,7 @@ GPIO.add_event_detect(23, GPIO.FALLING, callback=counter_1, bouncetime=1)
 while True:
     try:
     	# Get IP address
-	cmd = "hostname -I | awk '{print $7}'"
+	cmd = "hostname -I | cut -d\' \' -f1"
 	IP = subprocess.check_output(cmd, shell = True)
 	if IP and not IP.isspace():
 		pass # pass IP string
